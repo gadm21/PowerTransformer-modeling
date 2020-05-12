@@ -1,62 +1,58 @@
-"""
-Created on 2019年7月2日
-@author: Irony
-@site: https://pyqt5.com https://github.com/PyQt5
-@email: 892768447@qq.com
-@file: QPushButton.SignalsExample
-@description: 按钮信号例子
-"""
+
+import sys 
+import time 
+from functools import partial 
+
+from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QPlainTextEdit
 
-
-__Author__ = "Irony"
-__Copyright__ = "Copyright (c) 2019"
-__Version__ = "Version 1.0"
-
+from PyQt5.QtWidgets import QApplication 
 
 class Window(QWidget):
 
-    def __init__(self, *args, **kwargs):
-        super(Window, self).__init__(*args, **kwargs)
-        layout = QVBoxLayout(self)
+    def __init__(self):
+        super().__init__() 
 
-        btn1 = QPushButton('按钮点击信号', self)
-        btn1.setObjectName('ClickBtn')
-        btn1.clicked.connect(self.onClicked)
+        self.buttons = dict() 
+        self.labels = dict() 
 
-        layout.addWidget(btn1)
-        layout.addWidget(QPushButton(
-            '按钮按下信号', self, objectName='PressBtn', pressed=self.onPressed))
-        layout.addWidget(QPushButton(
-            '按钮释放信号', self, objectName='ReleaseBtn', released=self.onReleased))
-        layout.addWidget(QPushButton(
-            '按钮选中信号', self, checkable=True, objectName='ToggleBtn', toggled=self.onToggled))
+        self.init_UI()
 
-        self.resultView = QPlainTextEdit(self)
-        self.resultView.setReadOnly(True)
-        layout.addWidget(self.resultView)
-
-    def onClicked(self):
-        self.resultView.appendPlainText(
-            '按钮{0}被点击'.format(self.sender().objectName()))
-
-    def onPressed(self):
-        self.resultView.appendPlainText(
-            '按钮{0}被按下'.format(self.sender().objectName()))
-
-    def onReleased(self):
-        self.resultView.appendPlainText(
-            '按钮{0}被释放'.format(self.sender().objectName()))
-
-    def onToggled(self, checked):
-        self.resultView.appendPlainText(
-            '按钮{0}被选中：{1}'.format(self.sender().objectName(), checked))
+    def init_UI(self):
+        self.setGeometry(300,300, 1000,500)
+        
+        self.create_button('button', (100, 100, 50, 20), self.on_clicked)
+        self.create_label('label',(160, 100, 50, 20) )
+        
 
 
-if __name__ == '__main__':
-    import sys
-    from PyQt5.QtWidgets import QApplication
-    app = QApplication(sys.argv)
-    w = Window()
-    w.show()
-    sys.exit(app.exec_())
+        self.show()
+        
+    def init_open_circuit_test(self):
+        
+        pass
+
+    def create_button(self, name, coords, on_clicked = None):
+        push_button = QtWidgets.QPushButton(name, self) 
+        push_button.setGeometry(QtCore.QRect(coords[0], coords[1], coords[2], coords[3]))
+        self.buttons[name] = push_button 
+        
+        if on_clicked : push_button.clicked.connect(partial(on_clicked, name))  
+        return push_button 
+
+    def create_label(self, name, coords):
+        label = QtWidgets.QLabel(name, self) 
+        label.setGeometry(QtCore.QRect(coords[0], coords[1], coords[2], coords[3]))
+        label.setMinimumSize(QtCore.QSize(60, 0))
+        self.labels[name] = label 
+        
+        return label 
+
+    def on_clicked(self, name):
+        
+        pass 
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)  
+    window = Window() 
+    sys.exit(app.exec_()) 
