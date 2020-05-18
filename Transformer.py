@@ -47,7 +47,8 @@ class Transformer ():
             assert value, 'cannot calculate eddy loss because {} is not defined'.format(key) 
         return self.values['k_c'] * (self.values['B_peak']**2) * (self.values['frequency']**2) * (self.values['lamination_thickness']**2) * self.values['volume']
 
-t = Transformer('silicon iron') 
+if __name__ == "__main__":
+    t = Transformer('silicon iron') 
 
-print(t.get_hysterisis_loss()) 
-print(t.get_eddy_loss()) 
+    print(t.get_hysterisis_loss()) 
+    print(t.get_eddy_loss()) 

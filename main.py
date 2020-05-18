@@ -8,10 +8,15 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QPlainTextEdit, Q
 from PyQt5.QtGui     import QPixmap, QPainter, QBrush, QPen, QFont
 from PyQt5.QtWidgets import QApplication 
 from PyQt5.QtCore import Qt 
+
+from Transformer import Transformer 
 class Window(QWidget):
 
     def __init__(self):
         super().__init__() 
+
+        self.core_material = 'silicon iron' 
+        self.transformer = Transformer(self.core_material)  
 
         self.buttons = dict() 
         self.labels = dict() 
@@ -40,7 +45,8 @@ class Window(QWidget):
 
     def create_widgets_and_hide(self):
         #tranformer probabilites tab
-        self.transformer_probabilities_widgets['materials_window'] = self.create_drop_menu(['silicon iron', 'powder iron'], (250,300,100,100), self.material_choice)
+        self.transformer_probabilities_widgets['materials_window'] = self.create_drop_menu(['silicon iron', 'powdered iron'], (250,230,100,100), self.material_choice)
+        self.transformer_probabilities_widgets['calculate_button'] = self.create_button('calculate', (500,230,100,100), self.calculate_iron_losses)
         self.transformer_probabilities_widgets['hysterisis_loss_label'] = self.create_label('Hysterisis Loss= B_max^β  k_c  V f^α', (100, 90, 100, 100))
         self.transformer_probabilities_widgets['B_peak'] = self.create_label('B_peak', (120, 120, 10,10))
         self.transformer_probabilities_widgets['frequency'] = self.create_label('frequency', (120, 140, 10,10))
@@ -51,7 +57,7 @@ class Window(QWidget):
 
         self.transformer_probabilities_widgets['eddy_Loss'] = self.create_label('Eddy Loss= B_max^2  k_c  V f^2 t^2', (500, 90, 10,10))
         self.transformer_probabilities_widgets['lamination_thickness'] = self.create_label('lamination thickness', (520, 120, 10,10))
-        self.transformer_probabilities_widgets['lamination_thickness_edit'] = self.create_line_edit( (600, 120, 10,10))
+        self.transformer_probabilities_widgets['lamination_thickness_edit'] = self.create_line_edit( (680, 120, 10,10))
 
         self.transformer_probabilities_widgets['materials_table'] = self.create_image('materials_table.jpg', (50, 320))
 
@@ -78,7 +84,23 @@ class Window(QWidget):
         for key, value in self.efficiency_widgets.items():
             value.setVisible(True) 
         
-    
+    def calculate_iron_losses(self):
+        frequency = int(self.transformer_probabilities_widgets['frequency_edit'].text())
+        lamination_thickness = float(self.transformer_probabilities_widgets['lamination_thickness_edit'].text()) 
+        volume = float(self.transformer_probabilities_widgets['volume_edit'].text()) 
+  
+        self.transformer = Transformer(self.core_material) 
+        self.transformer.set_value('frequency', frequency) 
+        self.transformer.set_value('volume', volume)
+        self.transformer.set_value('lamination_thickness', lamination_thickness) 
+
+        hysterisis_loss = self.transformer.get_hysterisis_loss() 
+        eddy_loss = self.transformer.get_eddy_loss() 
+        total_loss = hysterisis_loss + eddy_loss 
+
+        print("total_loss:", total_loss) 
+        
+        
     def init_short_circuit_tab(self):
         self.hide_all_tabs() 
         for key, value in self.short_circuit_widgets.items():
@@ -96,15 +118,10 @@ class Window(QWidget):
 
     def material_choice(self, choice) :
         print("chose:", choice) 
+        self.core_material = choice 
 
 
     
-
-
-    
-
-
-
     def init_open_circuit_test(self):
         
         pass
