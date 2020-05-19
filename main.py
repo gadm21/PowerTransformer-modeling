@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QPlainTextEdit, Q
 from PyQt5.QtGui     import QPixmap, QPainter, QBrush, QPen, QFont
 from PyQt5.QtWidgets import QApplication 
 from PyQt5.QtCore import Qt 
+import pyqtgraph as pg
+import random 
 
 from Transformer import Transformer 
 class Window(QWidget):
@@ -15,6 +17,7 @@ class Window(QWidget):
     def __init__(self):
         super().__init__() 
 
+        self.plots = [] 
         self.core_material = 'silicon iron' 
         self.transformer = Transformer(self.core_material)  
 
@@ -68,24 +71,25 @@ class Window(QWidget):
         self.transformer_probabilities_widgets['calculate_button'] = self.create_button('calculate', (250,270,70,35), self.calculate_iron_losses)
         self.transformer_probabilities_widgets['materials_table'] = self.create_image('materials_table.jpg', (50, 310))
 
-        self.transformer_probabilities_widgets['N1'] = self.create_label('N1:', (800, 110,10,10))
-        self.transformer_probabilities_widgets['N1_edit'] = self.create_line_edit((860, 110))
-        self.transformer_probabilities_widgets['N2'] = self.create_label('N2:', (800, 130,10,10))
-        self.transformer_probabilities_widgets['N2_edit'] = self.create_line_edit((860, 130))
+        self.transformer_probabilities_widgets['N1'] = self.create_label('N1:', (865, 110,10,10))
+        self.transformer_probabilities_widgets['N1_edit'] = self.create_line_edit((890, 110))
+        self.transformer_probabilities_widgets['N2'] = self.create_label('N2:', (865, 140,10,10))
+        self.transformer_probabilities_widgets['N2_edit'] = self.create_line_edit((890, 140))
 
 
         #efficiency tab
         self.efficiency_widgets['V1'] = self.create_label('V1:', (100,100,10,10))
-        self.efficiency_widgets['V1_edit'] = self.create_line_edit((120, 100))
-        self.efficiency_widgets['Load'] = self.create_label('Load:', (300,100,10,10))
-        self.efficiency_widgets['Load_edit'] = self.create_line_edit((330, 100))
+        self.efficiency_widgets['V1_edit'] = self.create_line_edit((130, 100))
+        self.efficiency_widgets['Load'] = self.create_label('Load (z,p.f.):', (310,100,10,10))
+        self.efficiency_widgets['Load_edit'] = self.create_line_edit((355, 100))
 
-        self.efficiency_widgets['plot'] = self.create_button('plot', (570, 100,40, 10), self.plot)
-        self.efficiency_widgets['undo'] = self.create_button('undo', (590, 100, 40, 10), self.undo_plot) 
-        self.efficiency_widgets['clear'] = self.create_button('clear', (620, 100, 40, 10), self.clear_plots)
+        self.efficiency_widgets['plot'] = self.create_button('plot', (590, 100,80, 25), self.plot)
+        self.efficiency_widgets['undo'] = self.create_button('undo', (690, 100, 80, 25), self.undo_plot) 
+        self.efficiency_widgets['clear'] = self.create_button('clear', (790, 100, 80, 25), self.clear_plots)
         
-
-
+        self.efficiency_widgets['efficiency'] = self.create_label('Efficiency:', (100, 150, 10, 10))    
+        self.efficiency_widgets['efficiency_edit'] = self.create_line_edit((190, 150))
+        self.efficiency_widgets['calculate_efficiency'] = self.create_button('calculate efficiency', (430, 150, 170, 30), self.calculate_efficiency) 
 
 
 
@@ -188,15 +192,45 @@ class Window(QWidget):
         self.short_circuit_widgets['current_edit'].setText(i + " A")
         self.short_circuit_widgets['R_eq_edit'].setText(R_eq + " ohm")
 
-    def plot(self):
+    def calculate_efficiency(self):
         v1 = self.efficiency_widgets['V1_edit'].text()
         load = self.efficiency_widgets['Load_edit'].text() 
-        efficiency = self.transformer.get_efficiency(v1, load) 
+        if ':' in v1 or ':' in load : return 
+
+        _, efficiency, _ = self.transformer.get_efficiency(v1, load)      
+        efficiency = '{:.1f}'.format(efficiency* 100)    
+        self.efficiency_widgets['efficiency_edit'].setText(str(efficiency ) + ' %')
+
+    def plot(self):
+        print('plotting')
+        v1 = self.efficiency_widgets['V1_edit'].text()
+        load = self.efficiency_widgets['Load_edit'].text() 
+        if ':' not in v1 and ':' not in load : return 
+        else : self.efficiency_widgets['efficiency_edit'].setText('')
     
+        output_va, efficiency, pf = self.transformer.get_efficiency(v1, load) 
+        pf = '{:.2f}'.format(pf) 
+
+        self.plots.append((output_va, efficiency, pf))
+        
+        self.graph = pg.PlotWidget() 
+        self.graph.setTitle('Load vs Efficiency')
+        self.graph.setLabel('left', 'Efficiency (%)', color='red', size=30)
+        self.graphWidget.setLabel('bottom', 'Load (VA)', color='red', size=30)
+        self.graph.setBackground('w')
+
+        colors = [(255,0,0), (255,255,0), (0,255,0), (0,0,255),(0,255,255), (255,0,255)]
+        for x, y, pf in self.plots :
+            pen = pg.mkPen(color=random.choice(colors) , name= pf+' p.f.', width=7, style=QtCore.Qt.DashLine)
+            self.graph.plot(x, y, pen=pen)   
+            self.graph.setVisible(True) 
+
+
     def clear_plots(self):
-        pass 
+        self.plots = [] 
+
     def undo_plot(self):
-        pass
+        if len(self.plots) : self.plots.pop()
 
     
     def init_open_circuit_test(self):
@@ -251,6 +285,8 @@ class Window(QWidget):
         menu.activated[str].connect(on_clicked)
         return menu 
 
+    def create_graph(self):
+        return pg.PlotWidget() 
 
 
 
