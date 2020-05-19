@@ -45,25 +45,71 @@ class Window(QWidget):
 
     def create_widgets_and_hide(self):
         #tranformer probabilites tab
-        self.transformer_probabilities_widgets['materials_window'] = self.create_drop_menu(['silicon iron', 'powdered iron'], (250,230,100,100), self.material_choice)
-        self.transformer_probabilities_widgets['calculate_button'] = self.create_button('calculate', (500,230,100,100), self.calculate_iron_losses)
+        self.transformer_probabilities_widgets['materials_window'] = self.create_drop_menu(['silicon iron', 'powdered iron'], (100,270,100,100), self.material_choice)
         self.transformer_probabilities_widgets['hysterisis_loss_label'] = self.create_label('Hysterisis Loss= B_max^β  k_c  V f^α', (100, 90, 100, 100))
-        self.transformer_probabilities_widgets['B_peak'] = self.create_label('B_peak', (120, 120, 10,10))
-        self.transformer_probabilities_widgets['frequency'] = self.create_label('frequency', (120, 140, 10,10))
-        self.transformer_probabilities_widgets['frequency_edit'] = self.create_line_edit((250, 140))
-        self.transformer_probabilities_widgets['steimetz_constant'] = self.create_label('steimetz constant', (120, 160, 10,10))
-        self.transformer_probabilities_widgets['volume'] = self.create_label('volume', (120, 180, 10,10))
-        self.transformer_probabilities_widgets['volume_edit'] = self.create_line_edit((250, 180))
+        self.transformer_probabilities_widgets['B_peak'] = self.create_label('B_peak', (100, 120, 10,10))
+        self.transformer_probabilities_widgets['frequency'] = self.create_label('frequency', (100, 140, 10,10))
+        self.transformer_probabilities_widgets['frequency_edit'] = self.create_line_edit((230, 140))
+        self.transformer_probabilities_widgets['steimetz_constant'] = self.create_label('steimetz constant', (100, 160, 10,10))
+        self.transformer_probabilities_widgets['volume'] = self.create_label('volume', (100, 180, 10,10))
+        self.transformer_probabilities_widgets['volume_edit'] = self.create_line_edit((230, 180))
 
         self.transformer_probabilities_widgets['eddy_Loss'] = self.create_label('Eddy Loss= B_max^2  k_c  V f^2 t^2', (500, 90, 10,10))
-        self.transformer_probabilities_widgets['lamination_thickness'] = self.create_label('lamination thickness', (520, 120, 10,10))
-        self.transformer_probabilities_widgets['lamination_thickness_edit'] = self.create_line_edit( (680, 120, 10,10))
+        self.transformer_probabilities_widgets['lamination_thickness'] = self.create_label('lamination thickness', (500, 120, 10,10))
+        self.transformer_probabilities_widgets['lamination_thickness_edit'] = self.create_line_edit( (660, 120, 10,10))
 
-        self.transformer_probabilities_widgets['materials_table'] = self.create_image('materials_table.jpg', (50, 320))
+        self.transformer_probabilities_widgets['eddy_loss_result'] = self.create_label("Eddy Loss = ", (880, 200, 10,10))
+        self.transformer_probabilities_widgets['eddy_loss_result_edit'] = self.create_line_edit((1000, 200))
+        self.transformer_probabilities_widgets['hysterisis_loss_result'] = self.create_label("Hysterisis Loss = ", (880, 230, 10,10))
+        self.transformer_probabilities_widgets['hysterisis_loss_result_edit'] = self.create_line_edit((1000, 230))
+        self.transformer_probabilities_widgets['core_loss_result'] = self.create_label("Core Losses = ", (880, 260, 10,10))
+        self.transformer_probabilities_widgets['core_loss_result_edit'] = self.create_line_edit((1000, 260))
+
+        self.transformer_probabilities_widgets['calculate_button'] = self.create_button('calculate', (250,270,70,35), self.calculate_iron_losses)
+        self.transformer_probabilities_widgets['materials_table'] = self.create_image('materials_table.jpg', (50, 310))
+
+        self.transformer_probabilities_widgets['N1'] = self.create_label('N1:', (800, 110,10,10))
+        self.transformer_probabilities_widgets['N1_edit'] = self.create_line_edit((860, 110))
+        self.transformer_probabilities_widgets['N2'] = self.create_label('N2:', (800, 130,10,10))
+        self.transformer_probabilities_widgets['N2_edit'] = self.create_line_edit((860, 130))
 
 
-        self.efficiency_widgets['efficiency_button'] = self.create_button('efficiency', [100, 100, 50, 50], self.init_open_circuit_test)
-        self.efficiency_widgets['efficiency_button'].setVisible(False) 
+        #efficiency tab
+        self.efficiency_widgets['V1'] = self.create_label('V1:', (100,100,10,10))
+        self.efficiency_widgets['V1_edit'] = self.create_line_edit((120, 100))
+        self.efficiency_widgets['Load'] = self.create_label('Load:', (300,100,10,10))
+        self.efficiency_widgets['Load_edit'] = self.create_line_edit((330, 100))
+
+        self.efficiency_widgets['plot'] = self.create_button('plot', (570, 100,40, 10), self.plot)
+        self.efficiency_widgets['undo'] = self.create_button('undo', (590, 100, 40, 10), self.undo_plot) 
+        self.efficiency_widgets['clear'] = self.create_button('clear', (620, 100, 40, 10), self.clear_plots)
+        
+
+
+
+
+
+        #short-citcuit test tab 
+        self.short_circuit_widgets['source_voltage'] = self.create_label('source voltage', (100, 90, 10,10))
+        self.short_circuit_widgets['source_voltage_edit'] = self.create_line_edit((220, 90))
+        self.short_circuit_widgets['record_measurements_button'] = self.create_button('record measurements', (440, 90,220,25), self.record_measurements)
+
+        self.short_circuit_widgets['power'] = self.create_label('power = ', (100, 140, 10,10))
+        self.short_circuit_widgets['power_edit'] = self.create_line_edit((170, 140))
+
+        self.short_circuit_widgets['current'] = self.create_label('current = ', (480, 140, 10,10))
+        self.short_circuit_widgets['current_edit'] = self.create_line_edit((560, 140))
+
+        self.short_circuit_widgets['R_eq'] = self.create_label('R_eq = ', (780, 140, 10,10))
+        self.short_circuit_widgets['R_eq_edit'] = self.create_line_edit((830, 140))
+
+        self.short_circuit_widgets['short_circuit_test_figure'] = self.create_image('short_circuit_test.jpg', (50, 320)) 
+        
+
+
+        #open-circuit test tab 
+        self.hide_all_tabs() 
+
 
 
     def init_tabs(self):
@@ -76,7 +122,6 @@ class Window(QWidget):
         self.hide_all_tabs()
         print("all tabs hidded")
         for key, value in self.transformer_probabilities_widgets.items() :
-            print("showing :", key) 
             value.setVisible(True) 
     
     def init_efficiency_tab(self):
@@ -88,15 +133,26 @@ class Window(QWidget):
         frequency = int(self.transformer_probabilities_widgets['frequency_edit'].text())
         lamination_thickness = float(self.transformer_probabilities_widgets['lamination_thickness_edit'].text()) 
         volume = float(self.transformer_probabilities_widgets['volume_edit'].text()) 
-  
+        N1 = int(self.transformer_probabilities_widgets['N1_edit'].text())
+        N2 = int(self.transformer_probabilities_widgets['N2_edit'].text())
+        
         self.transformer = Transformer(self.core_material) 
         self.transformer.set_value('frequency', frequency) 
         self.transformer.set_value('volume', volume)
         self.transformer.set_value('lamination_thickness', lamination_thickness) 
+        self.transformer.set_value('N1', N1) 
+        self.transformer.set_value('N2', N2) 
 
         hysterisis_loss = self.transformer.get_hysterisis_loss() 
         eddy_loss = self.transformer.get_eddy_loss() 
         total_loss = hysterisis_loss + eddy_loss 
+        hysterisis_loss = '{:10.3f}'.format(hysterisis_loss) 
+        eddy_loss = '{:10.3f}'.format(eddy_loss) 
+        total_loss = '{:10.3f}'.format(total_loss) 
+
+        self.transformer_probabilities_widgets['hysterisis_loss_result_edit'].setText(hysterisis_loss + ' W') 
+        self.transformer_probabilities_widgets['eddy_loss_result_edit'].setText(eddy_loss + ' W') 
+        self.transformer_probabilities_widgets['core_loss_result_edit'].setText(total_loss + ' W') 
 
         print("total_loss:", total_loss) 
         
@@ -120,6 +176,27 @@ class Window(QWidget):
         print("chose:", choice) 
         self.core_material = choice 
 
+    def record_measurements(self):
+        voltage = float(self.short_circuit_widgets['source_voltage_edit'].text()) 
+        p, i = self.transformer.get_open_circuit_test(voltage) 
+        p = '{:10.3f}'.format(p) 
+        i = '{:10.3f}'.format(i) 
+        R_eq = self.transformer.values['R_eq']
+        R_eq = '{:10.3f}'.format(R_eq) 
+        
+        self.short_circuit_widgets['power_edit'].setText(p + " W")
+        self.short_circuit_widgets['current_edit'].setText(i + " A")
+        self.short_circuit_widgets['R_eq_edit'].setText(R_eq + " ohm")
+
+    def plot(self):
+        v1 = self.efficiency_widgets['V1_edit'].text()
+        load = self.efficiency_widgets['Load_edit'].text() 
+        efficiency = self.transformer.get_efficiency(v1, load) 
+    
+    def clear_plots(self):
+        pass 
+    def undo_plot(self):
+        pass
 
     
     def init_open_circuit_test(self):
