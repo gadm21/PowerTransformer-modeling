@@ -32,13 +32,13 @@ class Transformer ():
             self.values['k_c'] = 3.388
             self.values['alpha'] = 1.7 
             self.values['beta'] = 1.9
-            self.values['R_eq'] = 85
+            self.values['R_eq'] = 1800.5
         elif self.material == 'powdered iron':
             self.values['B_peak'] = 1
             self.values['k_c'] = 1798 
             self.values['alpha'] = 1.02 
             self.values['beta'] = 1.89 
-            self.values['R_eq'] = 41 
+            self.values['R_eq'] = 1000
     
     def set_value(self, name, value):
         assert name in self.values, 'key doesnot exist in self.values'
@@ -46,7 +46,7 @@ class Transformer ():
     
     def deg2rad(deg) : return (deg*pi) / 180 
     
-    def get_open_circuit_test(self, voltage):
+    def get_short_circuit_test(self, voltage):
         p = voltage**2 / self.values['R_eq'] 
         i = math.sqrt(p/self.values['R_eq']) 
         return p, i
@@ -104,7 +104,7 @@ class Transformer ():
 
         if verbose : print("v1:", v1,"  load:", load,"  output_va:", output_va, "  core losses:", core_losses, "  cupper losses:", cupper_losses) 
         
-        efficiency = output_va / (output_va + core_losses + cupper_losses)  
+        efficiency = (output_va / (output_va + core_losses + cupper_losses)  ) * 100
         return output_va, efficiency, pf
         
 

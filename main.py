@@ -81,11 +81,11 @@ class Window(QWidget):
         self.efficiency_widgets['V1'] = self.create_label('V1:', (100,100,10,10))
         self.efficiency_widgets['V1_edit'] = self.create_line_edit((130, 100))
         self.efficiency_widgets['Load'] = self.create_label('Load (z,p.f.):', (310,100,10,10))
-        self.efficiency_widgets['Load_edit'] = self.create_line_edit((355, 100))
+        self.efficiency_widgets['Load_edit'] = self.create_line_edit((405, 100))
 
-        self.efficiency_widgets['plot'] = self.create_button('plot', (590, 100,80, 25), self.plot)
-        self.efficiency_widgets['undo'] = self.create_button('undo', (690, 100, 80, 25), self.undo_plot) 
-        self.efficiency_widgets['clear'] = self.create_button('clear', (790, 100, 80, 25), self.clear_plots)
+        self.efficiency_widgets['plot'] = self.create_button('plot', (610, 100,80, 25), self.plot)
+        self.efficiency_widgets['undo'] = self.create_button('undo', (710, 100, 80, 25), self.undo_plot) 
+        self.efficiency_widgets['clear'] = self.create_button('clear', (810, 100, 80, 25), self.clear_plots)
         
         self.efficiency_widgets['efficiency'] = self.create_label('Efficiency:', (100, 150, 10, 10))    
         self.efficiency_widgets['efficiency_edit'] = self.create_line_edit((190, 150))
@@ -111,16 +111,15 @@ class Window(QWidget):
         
 
 
-        #open-circuit test tab 
         self.hide_all_tabs() 
 
 
 
     def init_tabs(self):
         self.create_button('Transformer Probabilities', (25, 25, 200, 40), self.init_transformer_probability_tab)
-        self.create_button('Effeciency', (250, 25, 100, 40), self.init_efficiency_tab)
-        self.create_button('Short-Circuit Test', (360, 25, 200, 40), self.init_short_circuit_tab) 
-        self.create_button('Open-Circuit Test', (570, 25, 200, 40), self.init_open_circuit_test)
+        self.create_button('Effeciency', (350, 25, 100, 40), self.init_efficiency_tab)
+        self.create_button('Short-Circuit Test', (460, 25, 200, 40), self.init_short_circuit_tab) 
+        
 
     def init_transformer_probability_tab(self) :
         self.hide_all_tabs()
@@ -182,7 +181,7 @@ class Window(QWidget):
 
     def record_measurements(self):
         voltage = float(self.short_circuit_widgets['source_voltage_edit'].text()) 
-        p, i = self.transformer.get_open_circuit_test(voltage) 
+        p, i = self.transformer.get_short_circuit_test(voltage) 
         p = '{:10.3f}'.format(p) 
         i = '{:10.3f}'.format(i) 
         R_eq = self.transformer.values['R_eq']
@@ -216,13 +215,14 @@ class Window(QWidget):
         self.graph = pg.PlotWidget() 
         self.graph.setTitle('Load vs Efficiency')
         self.graph.setLabel('left', 'Efficiency (%)', color='red', size=30)
-        self.graphWidget.setLabel('bottom', 'Load (VA)', color='red', size=30)
+        self.graph.setLabel('bottom', 'Load (VA)', color='red', size=30)
         self.graph.setBackground('w')
 
         colors = [(255,0,0), (255,255,0), (0,255,0), (0,0,255),(0,255,255), (255,0,255)]
         for x, y, pf in self.plots :
-            pen = pg.mkPen(color=random.choice(colors) , name= pf+' p.f.', width=7, style=QtCore.Qt.DashLine)
+            pen = pg.mkPen(color=random.choice(colors) , name= pf+' p.f.', width=1, style=QtCore.Qt.DashLine)
             self.graph.plot(x, y, pen=pen)   
+            self.graph.addLegend() 
             self.graph.setVisible(True) 
 
 
@@ -233,9 +233,6 @@ class Window(QWidget):
         if len(self.plots) : self.plots.pop()
 
     
-    def init_open_circuit_test(self):
-        
-        pass
 
     def paintEvent(self, e):
         '''
@@ -249,7 +246,7 @@ class Window(QWidget):
         #painter.setBrush(QBrush(QtGui.QColor('#fcfcfc')))
         painter.setBrush(QBrush(Qt.blue, Qt.DiagCrossPattern))
  
-        painter.drawRect(20, 20, 800,50)
+        painter.drawRect(20, 20, 650,50)
 
     def create_button(self, name, coords, on_clicked = None):
         push_button = QPushButton(name, self) 
