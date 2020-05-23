@@ -27,6 +27,7 @@ class Window(QWidget):
         self.transformer_probabilities_widgets = dict() 
         self.efficiency_widgets = dict() 
         self.short_circuit_widgets = dict() 
+        self.main_tab_widgets = dict()
         
 
         self.setfont() 
@@ -39,14 +40,28 @@ class Window(QWidget):
         self.setFont(font) 
 
     def init_UI(self):
-        self.setGeometry(300,300, 1200,600)
+        self.setGeometry(300,300, 1400,600)
 
         self.init_tabs() 
         self.create_widgets_and_hide() 
+        self.init_main_tab() 
 
         self.show()
 
     def create_widgets_and_hide(self):
+
+        #main tab 
+        self.main_tab_widgets['logo'] = self.create_image('Nile_University_logo.png', (700,26), resize = True)
+        self.main_tab_widgets['nile_university'] = self.create_label('Nile University', (870, 25, 10,10), font = True) 
+        self.main_tab_widgets['school'] = self.create_label("school of engineering and applied science", (870, 55, 10, 10), font = True)
+        self.main_tab_widgets['dep'] = self.create_label("Electronics and Computer Engineering (ECE)", (870, 85, 10, 10), font = True)
+        self.main_tab_widgets['course'] = self.create_label("Electric Machines (ECEN 403)", (870, 115, 10, 15), font = True)
+        self.main_tab_widgets['project'] = self.create_label("Transformer design & modeling", (800, 300, 10, 15), font = 25)
+
+        self.main_tab_widgets['by'] = self.create_label("By - Gad Mohamed Gad", (750, 500, 10, 15))
+        self.main_tab_widgets['to'] = self.create_label("To - Dr. Heba Ahmed Hassan & Eng. Shadwa Mohsen", (750, 525, 10, 15))
+        
+
         #tranformer probabilites tab
         self.transformer_probabilities_widgets['materials_window'] = self.create_drop_menu(['silicon iron', 'powdered iron'], (100,270,100,100), self.material_choice)
         self.transformer_probabilities_widgets['hysterisis_loss_label'] = self.create_label('Hysterisis Loss= B_max^β  k_c  V f^α', (100, 90, 100, 100))
@@ -123,15 +138,38 @@ class Window(QWidget):
 
     def init_transformer_probability_tab(self) :
         self.hide_all_tabs()
-        print("all tabs hidded")
         for key, value in self.transformer_probabilities_widgets.items() :
             value.setVisible(True) 
     
+    def init_short_circuit_tab(self):
+        self.hide_all_tabs() 
+        for key, value in self.short_circuit_widgets.items():
+            value.setVisible(True)
+
     def init_efficiency_tab(self):
         self.hide_all_tabs() 
         for key, value in self.efficiency_widgets.items():
             value.setVisible(True) 
         
+
+    def init_main_tab(self):
+        self.hide_all_tabs()
+        for key, value in self.main_tab_widgets.items():
+            value.setVisible(True) 
+        
+
+
+    def hide_all_tabs(self):
+        for key, value in self.transformer_probabilities_widgets.items() :
+            value.setVisible(False) 
+        for key, value in self.efficiency_widgets.items():
+            value.setVisible(False) 
+        for key, value in self.short_circuit_widgets.items():
+            value.setVisible(False) 
+        for key, value in self.main_tab_widgets.items():
+            value.setVisible(False) 
+
+
     def calculate_iron_losses(self):
         frequency = int(self.transformer_probabilities_widgets['frequency_edit'].text())
         lamination_thickness = float(self.transformer_probabilities_widgets['lamination_thickness_edit'].text()) 
@@ -158,22 +196,6 @@ class Window(QWidget):
         self.transformer_probabilities_widgets['core_loss_result_edit'].setText(total_loss + ' W') 
 
         print("total_loss:", total_loss) 
-        
-        
-    def init_short_circuit_tab(self):
-        self.hide_all_tabs() 
-        for key, value in self.short_circuit_widgets.items():
-            value.setVisible(True) 
-
-
-    def hide_all_tabs(self):
-        for key, value in self.transformer_probabilities_widgets.items() :
-            value.setVisible(False) 
-        for key, value in self.efficiency_widgets.items():
-            value.setVisible(False) 
-        for key, value in self.short_circuit_widgets.items():
-            value.setVisible(False) 
-
 
     def material_choice(self, choice) :
         print("chose:", choice) 
@@ -254,15 +276,19 @@ class Window(QWidget):
         if on_clicked : push_button.clicked.connect(on_clicked)  
         return push_button 
 
-    def create_label(self, name, coords):
+    def create_label(self, name, coords, font = None ):
         label = QLabel(name, self) 
         label.setGeometry(QtCore.QRect(coords[0], coords[1], coords[2], coords[3]))  
+        if font : 
+            if isinstance(font, int) and font == 25: label.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold) )
+            else :label.setFont(QtGui.QFont("Times", 15, QtGui.QFont.Bold) )
         label.adjustSize() 
         label.setMinimumSize(QtCore.QSize(60, 0))
         return label 
 
-    def create_image(self, image_name, coords):
-        image = QPixmap(image_name) 
+    def create_image(self, image_name, coords, resize = None):
+        image = QPixmap(image_name)
+        if resize : image = image.scaledToWidth(150) 
         label = QLabel(self) 
         label.setPixmap(image) 
         label.setGeometry(QtCore.QRect(coords[0], coords[1], image.width(), image.height()))
