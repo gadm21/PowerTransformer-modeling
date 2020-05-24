@@ -131,7 +131,7 @@ class Window(QWidget):
 
 
     def init_tabs(self):
-        self.create_button('Transformer Probabilities', (25, 25, 200, 40), self.init_transformer_probability_tab)
+        self.create_button('Transformer Properties', (25, 25, 200, 40), self.init_transformer_probability_tab)
         self.create_button('Effeciency', (350, 25, 100, 40), self.init_efficiency_tab)
         self.create_button('Short-Circuit Test', (460, 25, 200, 40), self.init_short_circuit_tab) 
         
@@ -219,11 +219,10 @@ class Window(QWidget):
         if ':' in v1 or ':' in load : return 
 
         _, efficiency, _ = self.transformer.get_efficiency(v1, load)      
-        efficiency = '{:.1f}'.format(efficiency* 100)    
+        efficiency = '{:.1f}'.format(efficiency)    
         self.efficiency_widgets['efficiency_edit'].setText(str(efficiency ) + ' %')
 
     def plot(self):
-        print('plotting')
         v1 = self.efficiency_widgets['V1_edit'].text()
         load = self.efficiency_widgets['Load_edit'].text() 
         if ':' not in v1 and ':' not in load : return 
@@ -241,8 +240,9 @@ class Window(QWidget):
         self.graph.setBackground('w')
 
         colors = [(255,0,0), (255,255,0), (0,255,0), (0,0,255),(0,255,255), (255,0,255)]
-        for x, y, pf in self.plots :
-            pen = pg.mkPen(color=random.choice(colors) , name= pf+' p.f.', width=1, style=QtCore.Qt.DashLine)
+        for i, plott in enumerate(self.plots) :
+            x, y, pf = plott 
+            pen = pg.mkPen(color=colors[i%len(colors)] , name= pf+' p.f.', width=3, style=QtCore.Qt.DashLine)
             self.graph.plot(x, y, pen=pen)   
             self.graph.addLegend() 
             self.graph.setVisible(True) 

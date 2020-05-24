@@ -32,13 +32,13 @@ class Transformer ():
             self.values['k_c'] = 3.388
             self.values['alpha'] = 1.7 
             self.values['beta'] = 1.9
-            self.values['R_eq'] = 1800.5
+            self.values['R_eq'] = 1
         elif self.material == 'powdered iron':
             self.values['B_peak'] = 1
             self.values['k_c'] = 1798 
             self.values['alpha'] = 1.02 
             self.values['beta'] = 1.89 
-            self.values['R_eq'] = 1000
+            self.values['R_eq'] = 2
     
     def set_value(self, name, value):
         assert name in self.values, 'key doesnot exist in self.values'
@@ -68,7 +68,11 @@ class Transformer ():
         return np.array(rangee)  
 
     def analyze_load(self, load, points_num=200) :
-        z, pf = load.split(',') 
+        if ',' in load : z, pf = load.split(',') 
+        else : 
+            z = load
+            pf = 1
+
         if ':' in z : 
             z_start, z_end = z.split(':') 
             z_start = float(z_start) 
@@ -102,9 +106,13 @@ class Transformer ():
         core_losses = self.get_hysterisis_loss() + self.get_eddy_loss() 
         cupper_losses = i1**2 * self.values['R_eq']
 
-        if verbose : print("v1:", v1,"  load:", load,"  output_va:", output_va, "  core losses:", core_losses, "  cupper losses:", cupper_losses) 
+        
         
         efficiency = (output_va / (output_va + core_losses + cupper_losses)  ) * 100
+
+        if verbose : print("v1:", v1,"  load:", z,"  output_va:", output_va, "  efficiency:", efficiency, "  cupper losses:", cupper_losses) 
+        #print("\n\n\n")
+        
         return output_va, efficiency, pf
         
 
